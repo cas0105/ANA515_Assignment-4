@@ -1,0 +1,201 @@
+---
+title: "ANA 515 Assignment 4"
+author: "Christopher Spann"
+date: "12/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Business Problem / Goal
+
+According to the Federal Bureau of Investigation, credit card fraud is “the unauthorized use of a credit or debit card, or similar payment tool (ACH, EFT, recurring charge, etc.), to fraudulently obtain money or property”; moreover, credit card holders often seek security in knowing that their financial institution implements practices for detecting fraudulent purchases and dealing with them accordingly. The goal of this project is to create a model for identifying fraudulent credit card transactions given a list of numerical variables. It is important that financial institutions are able to classify a purchase as fraudulent or legitimate so that consumers are not charged for items that they did not purchase.
+
+# Dataset
+
+ -The data used for this project contains transactions made by credit cards in September of 2013 by European cardholders.
+ 
+ -This dataset presents transactions that occurred in two days, and overall there are 492 frauds out of 284,807 total transactions.
+ 
+ -The dataset was retrieved from Kaggle, but originally the dataset was collected for a research project by the machine learning group of ULB (Université Libre de Bruxelles).
+ 
+ https://www.kaggle.com/mlg-ulb/creditcardfraud
+ 
+# Importing Dataset
+
+I first downloaded the csv file from the Kaggle site and then moved it to my working directory folder of R Studio. Then, I imported the file into R Studio to begin analysis. Below is the code used to import and save the dataset in R.
+
+```{r, echo = TRUE}
+#First, we need to call the appropriate library for reading the data into R. Then we will use the read.csv function to load the dataset from our working directory into R.
+library(readr)
+cc_fraud <- read.csv(file = "creditcard.csv")
+```
+
+# Description of Data
+```{r, echo = TRUE}
+#We can get a good description of the data using a few functions in R. First, we will describe a summary of the data including the number of rows using nrow, the number of columns using ncol, and then a brief summary of each variable using the summary function. The output of the summary function includes the min, 1Q, median, mean 3Q, and max for each variable in the dataset.
+```
+
+-Number of rows: `r nrow(cc_fraud)`
+
+-Number of columns: `r ncol(cc_fraud)`
+
+```{r, echo = TRUE}
+summary(cc_fraud)
+```
+This table below lists all variables in the dataset as well as the variable class, variable type, variable mean, variable standard deviation, variable min, variable max, and number of missing values by variable.
+
+```{r, echo = TRUE}
+#This next code chunk is used to create a summary table of the variable of the dataset.
+#We will create vectors of values in order to create this table.
+```
+
+``` {r, echo = TRUE}
+#The first column will be the variable names of all variables in the dataset. The ls function can be used to list the objects of our dataframe, cc_fraud. Then, the c function can be used to combine all values into a vector.
+column_names <- c(ls(cc_fraud))
+
+#Similar to column name, we will be creating a vector of the variable class. The class function prints the vector of names of classes an object inherits from.
+variable_class <- c(class(cc_fraud$Amount), class(cc_fraud$Class), class(cc_fraud$Time), class(cc_fraud$V1), class(cc_fraud$V10), class(cc_fraud$V11), class(cc_fraud$V12), class(cc_fraud$V13), class(cc_fraud$V14), class(cc_fraud$V15), class(cc_fraud$V16), class(cc_fraud$V17), class(cc_fraud$V18), class(cc_fraud$V19), class(cc_fraud$V2), class(cc_fraud$V20), class(cc_fraud$V21), class(cc_fraud$V22), class(cc_fraud$V23), class(cc_fraud$V24), class(cc_fraud$V25), class(cc_fraud$V26), class(cc_fraud$V27), class(cc_fraud$V28), class(cc_fraud$V3), class(cc_fraud$V4), class(cc_fraud$V5), class(cc_fraud$V6), class(cc_fraud$V7), class(cc_fraud$V8), class(cc_fraud$V9))
+
+#Next, we want to see the variable type of each variable in the dataset. We will be using the typeof function which determines the (R internal) type or storage mode of any object.
+variable_type <- c(typeof(cc_fraud$Amount), typeof(cc_fraud$Class), typeof(cc_fraud$Time), typeof(cc_fraud$V1), typeof(cc_fraud$V10), typeof(cc_fraud$V11), typeof(cc_fraud$V12), typeof(cc_fraud$V13), typeof(cc_fraud$V14), typeof(cc_fraud$V15), typeof(cc_fraud$V16), typeof(cc_fraud$V17), typeof(cc_fraud$V18), typeof(cc_fraud$V19), typeof(cc_fraud$V2), typeof(cc_fraud$V20), typeof(cc_fraud$V21), typeof(cc_fraud$V22), typeof(cc_fraud$V23), typeof(cc_fraud$V24), typeof(cc_fraud$V25), typeof(cc_fraud$V26), typeof(cc_fraud$V27), typeof(cc_fraud$V28), typeof(cc_fraud$V3), typeof(cc_fraud$V4), typeof(cc_fraud$V5), typeof(cc_fraud$V6), typeof(cc_fraud$V7), typeof(cc_fraud$V8), typeof(cc_fraud$V9))
+
+#To get variable mean, we will use the mean function. We will nest the mean function within round to shorten our output to only 4 digits after the decimal.
+variable_mean <- c(round(mean(cc_fraud$Amount), digits=4), round(mean(cc_fraud$Class), digits=4), round(mean(cc_fraud$Time), digits=4), round(mean(cc_fraud$V1), digits=4), round(mean(cc_fraud$V10), digits=4), round(mean(cc_fraud$V11), digits=4), round(mean(cc_fraud$V12), digits=4), round(mean(cc_fraud$V13), digits=4), round(mean(cc_fraud$V14), digits=4), round(mean(cc_fraud$V15), digits=4), round(mean(cc_fraud$V16), digits=4), round(mean(cc_fraud$V17), digits=4), round(mean(cc_fraud$V18), digits=4), round(mean(cc_fraud$V19), digits=4), round(mean(cc_fraud$V2), digits=4), round(mean(cc_fraud$V20), digits=4), round(mean(cc_fraud$V21), digits=4), round(mean(cc_fraud$V22), digits=4), round(mean(cc_fraud$V23), digits=4), round(mean(cc_fraud$V24), digits=4), round(mean(cc_fraud$V25), digits=4), round(mean(cc_fraud$V26), digits=4), round(mean(cc_fraud$V27), digits=4), round(mean(cc_fraud$V28), digits=4), round(mean(cc_fraud$V3), digits=4), round(mean(cc_fraud$V4), digits=4), round(mean(cc_fraud$V5), digits=4), round(mean(cc_fraud$V6), digits=4), round(mean(cc_fraud$V7), digits=4), round(mean(cc_fraud$V8), digits=4), round(mean(cc_fraud$V9), digits=4))
+
+#To get variable standard deviation, we will use the sd function. We will nest the sd function within round to shorten our output to only 4 digits after the decimal.
+variable_stddev <- c(round(sd(cc_fraud$Amount), digits=4), round(sd(cc_fraud$Class), digits=4), round(sd(cc_fraud$Time), digits=4), round(sd(cc_fraud$V1), digits=4), round(sd(cc_fraud$V10), digits=4), round(sd(cc_fraud$V11), digits=4), round(sd(cc_fraud$V12), digits=4), round(sd(cc_fraud$V13), digits=4), round(sd(cc_fraud$V14), digits=4), round(sd(cc_fraud$V15), digits=4), round(sd(cc_fraud$V16), digits=4), round(sd(cc_fraud$V17), digits=4), round(sd(cc_fraud$V18), digits=4), round(sd(cc_fraud$V19), digits=4), round(sd(cc_fraud$V2), digits=4), round(sd(cc_fraud$V20), digits=4), round(sd(cc_fraud$V21), digits=4), round(sd(cc_fraud$V22), digits=4), round(sd(cc_fraud$V23), digits=4), round(sd(cc_fraud$V24), digits=4), round(sd(cc_fraud$V25), digits=4), round(sd(cc_fraud$V26), digits=4), round(sd(cc_fraud$V27), digits=4), round(sd(cc_fraud$V28), digits=4), round(sd(cc_fraud$V3), digits=4), round(sd(cc_fraud$V4), digits=4), round(sd(cc_fraud$V5), digits=4), round(sd(cc_fraud$V6), digits=4), round(sd(cc_fraud$V7), digits=4), round(sd(cc_fraud$V8), digits=4), round(sd(cc_fraud$V9), digits=4))
+
+#To get variable minimum, we will use the min function. We will nest the min function within round to shorten our output to only 4 digits after the decimal.
+variable_min <- c(round(min(cc_fraud$Amount), digits=4), round(min(cc_fraud$Class), digits=4), round(min(cc_fraud$Time), digits=4), round(min(cc_fraud$V1), digits=4), round(min(cc_fraud$V10), digits=4), round(min(cc_fraud$V11), digits=4), round(min(cc_fraud$V12), digits=4), round(min(cc_fraud$V13), digits=4), round(min(cc_fraud$V14), digits=4), round(min(cc_fraud$V15), digits=4), round(min(cc_fraud$V16), digits=4), round(min(cc_fraud$V17), digits=4), round(min(cc_fraud$V18), digits=4), round(min(cc_fraud$V19), digits=4), round(min(cc_fraud$V2), digits=4), round(min(cc_fraud$V20), digits=4), round(min(cc_fraud$V21), digits=4), round(min(cc_fraud$V22), digits=4), round(min(cc_fraud$V23), digits=4), round(min(cc_fraud$V24), digits=4), round(min(cc_fraud$V25), digits=4), round(min(cc_fraud$V26), digits=4), round(min(cc_fraud$V27), digits=4), round(min(cc_fraud$V28), digits=4), round(min(cc_fraud$V3), digits=4), round(min(cc_fraud$V4), digits=4), round(min(cc_fraud$V5), digits=4), round(min(cc_fraud$V6), digits=4), round(min(cc_fraud$V7), digits=4), round(min(cc_fraud$V8), digits=4), round(min(cc_fraud$V9), digits=4))
+
+#To get variable maximum, we will use the max function. We will nest the max function within round to shorten our output to only 4 digits after the decimal.
+variable_max <- c(round(max(cc_fraud$Amount), digits=4), round(max(cc_fraud$Class), digits=4), round(max(cc_fraud$Time), digits=4), round(max(cc_fraud$V1), digits=4), round(max(cc_fraud$V10), digits=4), round(max(cc_fraud$V11), digits=4), round(max(cc_fraud$V12), digits=4), round(max(cc_fraud$V13), digits=4), round(max(cc_fraud$V14), digits=4), round(max(cc_fraud$V15), digits=4), round(max(cc_fraud$V16), digits=4), round(max(cc_fraud$V17), digits=4), round(max(cc_fraud$V18), digits=4), round(max(cc_fraud$V19), digits=4), round(max(cc_fraud$V2), digits=4), round(max(cc_fraud$V20), digits=4), round(max(cc_fraud$V21), digits=4), round(max(cc_fraud$V22), digits=4), round(max(cc_fraud$V23), digits=4), round(max(cc_fraud$V24), digits=4), round(max(cc_fraud$V25), digits=4), round(max(cc_fraud$V26), digits=4), round(max(cc_fraud$V27), digits=4), round(max(cc_fraud$V28), digits=4), round(max(cc_fraud$V3), digits=4), round(max(cc_fraud$V4), digits=4), round(max(cc_fraud$V5), digits=4), round(max(cc_fraud$V6), digits=4), round(max(cc_fraud$V7), digits=4), round(max(cc_fraud$V8), digits=4), round(max(cc_fraud$V9), digits=4))
+
+#To determine the number of missing values in each column, we can sum up the number of NAs using the is.na function. The code below will generate a vector of the number of missing values in each column since the is.na function indicates which elements are missing from each column.
+variable_missing_values <- c(sum(is.na(cc_fraud$Amount)), sum(is.na(cc_fraud$Class)), sum(is.na(cc_fraud$Time)), sum(is.na(cc_fraud$V1)), sum(is.na(cc_fraud$V10)), sum(is.na(cc_fraud$V11)), sum(is.na(cc_fraud$V12)), sum(is.na(cc_fraud$V13)), sum(is.na(cc_fraud$V14)), sum(is.na(cc_fraud$V15)), sum(is.na(cc_fraud$V16)), sum(is.na(cc_fraud$V17)), sum(is.na(cc_fraud$V18)), sum(is.na(cc_fraud$V19)), sum(is.na(cc_fraud$V2)), sum(is.na(cc_fraud$V20)), sum(is.na(cc_fraud$V21)), sum(is.na(cc_fraud$V22)), sum(is.na(cc_fraud$V23)), sum(is.na(cc_fraud$V24)), sum(is.na(cc_fraud$V25)), sum(is.na(cc_fraud$V26)), sum(is.na(cc_fraud$V27)), sum(is.na(cc_fraud$V28)), sum(is.na(cc_fraud$V3)), sum(is.na(cc_fraud$V4)), sum(is.na(cc_fraud$V5)), sum(is.na(cc_fraud$V6)), sum(is.na(cc_fraud$V7)), sum(is.na(cc_fraud$V8)), sum(is.na(cc_fraud$V9)))
+
+#Next, we will create a dataframe where the variables are the vectors we just created. Using this dataframe, we can print a table in the final output that summarizes each variable.
+table.df <- data.frame(column_names, variable_class, variable_type, variable_mean, variable_stddev, variable_min, variable_max, variable_missing_values)
+knitr::kable(table.df, "simple", col.names = c("Column Name", "Variable Class", "Variable Type", "Variable Mean", "Variable Std Dev", "Variable Min", "Variable Max", "Variable # of NAs"), align = c("c", "c", "c", "c", "c", "c","c", "c"))
+```
+
+Due to confidentiality issues, the organization releasing the data could not provide the original features on the data (such as variable names). The only features not transformed for the dataset are time and amount. 'Time' represents the seconds elapsed between each transaction and the first transaction in the dataset. 'Amount' represents the transaction amount. 'Class' is the response variable and it takes value 1 in case of fraud and 0 otherwise.
+
+This dataset only contains numerical variables which are the result of PCA transformation. As you can see from the table output, most of the numerical variables (outside of time and amount) have a mean of 0. 
+ 
+# Data Preparation
+Most of the data preparation needed to perform analysis using this dataset occurred by the organization that released the data. The data had no missing values for any of the columns, and PCA (principal component analysis) transformation was performed using an orthogonal transformation in order to convert a group of correlated variables into a set of uncorrelated variables. As noted in the data description section, the organization releasing the data could not provide the variable names of original features for confidentiality purposes. 
+
+Most likely, the organization responsible for the dataset went through a variety of preparation steps in order to produce the clean dataset that we are using now. For instance, there are no missing values in the dataset - the original collector and cleaner of the data may have either assigned values to any records where they were missing, or removed records with missing values. In addition, another step that may have been taken would be to remove outliers from the dataset. Although the point of this project is to identify fraudulent transactions which by nature are anomalies or outliers compared to standard transactions, there may have been records with values that didn't make sense at all in the context of credit card purchases. If there were any records that could impact the analysis of fraudulent transactions, they may have been removed. The numerical variables V1 trhorugh V28 appeared to be standardized since they all have mean of 0. Lastly, the organization most likely removed extraneous data. If there were any fields that aren't relevant to the analysis, those were most likely removed from the original set of collected data. In addition, the names of variables are masked for confidentiality purposes.
+
+We will do a few data preparation steps in order to prepare the dataset for analysis, including standardizing the amount variable, removing variables we will not need, and creating training and test datasets for the modeling stage.
+
+```{r, echo = TRUE}
+#First, we will standardize the amount variable using the scale function. The other numeric variables appear to be standardized, so standardizing the amount variable will ensure that all numeric variables used for analysis are standardized. The goal in this is to ensure that there are no extreme values in our dataset that interfere with the functionality of models we develop later.
+cc_fraud$Amount=scale(cc_fraud$Amount)
+
+#Next, we will be removing the Time variable as it is not relevant for our analysis. To do this, we will create a new data frame and remove the first column, time.
+cc_fraud_updated=cc_fraud[, -c(1)]
+
+#We will double check that the time variable was removed using the head function to return the first part of the dataframe.
+head(cc_fraud_updated)
+
+#It looks like we have the data prepared as we need it - so we will move on to creating a training and testing dataset for the modeling.
+
+#First, we will load the caTools package. This package contains the sample split function which can be used to split the original dataset into training and testing sets.
+library(caTools)
+
+#Next, we will set a seed so that this analysis can be repeated.
+set.seed(123)
+
+#Finally, we can create our training and testing data using the sample.split function and using the subset function. We will use 80% of the data for training and the remaining for testing.
+data_sample = sample.split(cc_fraud_updated$Class, SplitRatio = 0.80)
+training_data <- subset(cc_fraud_updated, data_sample == TRUE)
+testing_data <- subset(cc_fraud_updated, data_sample == FALSE)
+
+#We can view the dimensions of the new datasets using the dim function
+
+dim(training_data)
+dim(testing_data)
+```
+
+As we can see, our training dataset has `r nrow(training_data)` rows and the testing dataset has `r nrow(testing_data)` rows. Now, we can move to the modeling phase of the analysis.
+
+# Data Modeling and Evaluation
+
+We will use 2 different methods of modeling for detecting fraudulent transactions in our credit card dataset. We will begin with a logistic regression model, then move to a decision tree model.
+
+## Logistic Regression Model
+```{r, echo = TRUE}
+#A logistic regression is used for modeling the probability of success for a binary response variable. We can use the glm function to create the linear model and specify that it will be a binomial response variable.
+#We are specifying class as the response variable, and including all other variables available in the dataframe as predictors.
+Logistic_Model <- glm(Class~.,training_data,family=binomial())
+summary(Logistic_Model)
+
+#After creating the model, we can create some visualizations.
+
+#The plot command will give us 4 useful plots for analyzing the logistic model: Residuals vs Fitted values Plot, Normal Q-Q Plot, Scale-Location Plot, and a Residuals vs Leverage Plot.
+plot(Logistic_Model)
+
+#To assess the performance of the model, we will delineate the ROC curve. This curve shows the trade-off between the sensitivity of the model and the specificity of the model.
+
+#We will need the pROC library, so we will call that first.
+library(pROC)
+
+#We will use the logistic model we created to make predictions on the testing data. We can do this using the predict function and calling out the model, data, and probability = TRUE
+#Then, we can compare the predictions of the testing data to the actual classes of the testing data and plot it on a ROC curve using the roc function.
+lr.predict <- predict(Logistic_Model,testing_data, probability = TRUE)
+auc.gbm = roc(testing_data$Class, lr.predict, plot = TRUE, col = "blue")
+
+#We can also create a confusion matrix to evaluate model performance. We will need the caret package to do this.
+library(caret)
+#use logistic regression model to predict probability of fraudulent transaction
+#If a transaction has a predicted probability greater than 0.50, we will classify that as 1, or fraudulent.
+#We will be creating a pred variable in the testing_data in order to compare the predicted classifications to the actual classifications. 
+predicted_prob <- predict(Logistic_Model, testing_data, type = "response")
+testing_data$pred <- ifelse(predicted_prob >0.50, "1", "0")
+testing_data$pred <- as.factor(testing_data$pred)
+testing_data$Class <- as.factor(testing_data$Class)
+#create the confusion matrix
+confusionMatrix(testing_data$Class, testing_data$pred)
+```
+
+A ROC curve that is close to a 45 degree angle has no predictive power. Since our curve is close to the top left, the logistic model appears to be a useful predictive model for classifying credit card transactions as fraudulent or not. In addition, the confusion matrix indicates a very high accuracy for our logisitic regression model. More will be discussed with regard to model performance after creating the decision tree model.
+
+## Decision Tree Model
+A decision tree creates a tree of various decisions and their possible consequences. This type of model can be very useful for predicting the classification of a credit card transaction.
+
+```{r, echo = TRUE}
+#First, we will load the necessary packages for fitting a decision tree model. The rpart package will be used to fit the regression tree and the rpart.plot package will be used for plotting the tree.
+library(rpart)
+library(rpart.plot)
+
+#We can use the rpart function to create our decision tree model. We will fit the decision tree using the training dataset. We are going to specify the method as class for classification, and use the training data just as we did with the logistic regression model.
+decisionTree_model <- rpart(Class ~ . , training_data, method = 'class')
+ 
+#Next, we can generate a list of predicted classifications using the predict function and our decision tree model.
+predicted_val <- predict(decisionTree_model, testing_data, type = 'class')
+
+#We can also show the predicted probabilities of of class being 1, a fraudulent transaction.
+pred_prob_tree <- predict(decisionTree_model, testing_data, type = 'prob')
+
+#Using the predicted probabilities, we can evaluate the performance of the model. If a predicted probability is greater than 0,5, we will assume the tree is classifying the transaction as fraudulent.
+#We will create a pred_tree variable in the testing_data in order to evaluate model performance.
+testing_data$pred_tree <- ifelse(pred_prob_tree >0.50, "1", "0")
+testing_data$pred_tree <- as.factor(testing_data$pred)
+
+#Similar to the logistic model, we can create a confusion matrix. This matrix will be comparing the predicted classifications against the actual classifications for the testing data.
+confusionMatrix(testing_data$Class, testing_data$pred_tree)
+
+#Lastly, we can plot the decision tree to actually visualize the decision making process for classification. The rpart.plot function can be used to plot a decision tree model.
+rpart.plot(decisionTree_model)
+```
+
+
+Both a logistic regression and a decision tree can be used as tools to classify transactions - based on the results of the confusion matrices, both models do equally well in predicting the correct classification. Out of the 64 total fraudulent transactions in the testing data, both models were able to successfully classify 57 of those, a rate of 89%. For transactions that were not fraudulent, the models incorrectly classified some as fraudulent 41 times out of the 56,897 total. This is a false-positive rate of roughly 0% which is very good. Overall, both models did an excellent job of classifying transactions as fraudulent or not, with an overall accuracy of 99.92% - one thing to keep in mind, though, is that there were only 64 total fraudulent transactions in the testing dataset, so it is crucial to classify fraud correctly as much as possible since they are anomalies in the dataset.
+
+# Summary
+Identifying fraudulent credit card transactions is an extremely important machine learning problem that many financial companies are actively attempting to perfect. Given a dataset of credit card transactions, we were able to successfully create 2 models to predict if a credit card transaction is fraudulent or not. Both models had overall accuracy around 99%, but I think a decision tree has more value due to the fact that an individual can see the decision making process visualized. 
